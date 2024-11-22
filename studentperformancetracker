@@ -1,0 +1,138 @@
+import java.util.Scanner;
+
+class Student {
+    private String name;
+    private double[] grades;
+    private boolean[] attendance;
+    private int totalSubjects;
+    private int totalClasses;
+
+    public Student(String name, int totalSubjects, int totalClasses) {
+        this.name = name;
+        this.totalSubjects = totalSubjects;
+        this.totalClasses = totalClasses;
+        this.grades = new double[totalSubjects];
+        this.attendance = new boolean[totalClasses];
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void inputGrades(Scanner scanner) {
+        System.out.println("Enter grades for " + name + ":");
+        for (int i = 0; i < totalSubjects; i++) {
+            System.out.print("Grade for subject " + (i + 1) + ": ");
+            while (true) {
+                try {
+                    double grade = Double.parseDouble(scanner.nextLine());
+                    if (grade < 0 || grade > 100) {
+                        throw new Exception("Grade must be between 0 and 100");
+                    }
+                    grades[i] = grade;
+                    break;
+                } catch (Exception e) {
+                    System.out.println("Invalid input. Please enter a grade between 0 and 100.");
+                }
+            }
+        }
+    }
+
+    public void inputAttendance(Scanner scanner) {
+        System.out.println("Enter attendance for " + name + ":");
+        for (int i = 0; i < totalClasses; i++) {
+            while (true) {
+                System.out.print("Class " + (i + 1) + " (Enter 'A' for Absent, 'P' for Present): ");
+                String input = scanner.nextLine().toUpperCase();
+                if (input.equals("A")) {
+                    attendance[i] = false;
+                    break;
+                } else if (input.equals("P")) {
+                    attendance[i] = true;
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please enter 'A' for Absent or 'P' for Present.");
+                }
+            }
+        }
+    }
+
+    public void displayReport() {
+        double averageGrade = calculateAverageGrade();
+        double attendancePercentage = calculateAttendancePercentage();
+        System.out.println("\n--- Performance Report for " + name + " ---");
+        System.out.println("Average Grade: " + averageGrade + "/100");
+        System.out.println("Attendance: " + attendancePercentage + "%");
+    }
+
+    private double calculateAverageGrade() {
+        double sum = 0;
+        for (double grade : grades) {
+            sum += grade;
+        }
+        return sum / grades.length;
+    }
+
+    private double calculateAttendancePercentage() {
+        int attendedClasses = 0;
+        for (boolean presence : attendance) {
+            if (presence) {
+                attendedClasses++;
+            }
+        }
+        return (attendedClasses * 100.0) / totalClasses;
+    }
+
+    public String getDetailedReport() {
+        StringBuilder report = new StringBuilder("Performance Report for " + name + "\n");
+        for (int i = 0; i < totalSubjects; i++) {
+            report.append("Subject ").append(i + 1).append(": ").append(grades[i]).append("/100\n");
+        }
+        double averageGrade = calculateAverageGrade();
+        double attendancePercentage = calculateAttendancePercentage();
+        report.append("\nAverage Grade: ").append(averageGrade).append("/100\n");
+        report.append("Attendance: ").append(attendancePercentage).append("%\n");
+        return report.toString();
+    }
+}
+
+public class StudentPerformanceTrackingSystem {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Define number of subjects and classes
+        int totalSubjects = 5;
+        int totalClasses = 20;
+
+        // Initialize students
+        Student[] students = {
+            new Student("Jayasurya", totalSubjects, totalClasses),
+            new Student("Robbin", totalSubjects, totalClasses),
+            new Student("Alexander", totalSubjects, totalClasses),
+            new Student("Kabilan", totalSubjects, totalClasses),
+            new Student("Aravind", totalSubjects, totalClasses)
+        };
+
+        // Input grades and attendance
+        for (Student student : students) {
+            student.inputGrades(scanner);
+            student.inputAttendance(scanner);
+        }
+
+        // Display performance reports
+        System.out.println("\n--- Performance Reports ---");
+        for (Student student : students) {
+            student.displayReport();
+        }
+
+        // Optionally generate and display detailed reports for all students
+        System.out.println("\n--- Detailed Reports ---");
+        for (Student student : students) {
+            System.out.println(student.getDetailedReport());
+        }
+
+        // Close scanner
+        scanner.close();
+    }
+}
